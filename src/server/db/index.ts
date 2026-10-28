@@ -8,8 +8,7 @@ import { ProjectEntity } from "./entities/ProjectEntity.js";
 dotenv.config();
 
 /**
- * TypeORM Data Source Configuration
- * DB-First Approach: synchronize is set to false because migrations manage the PostgreSQL schema.
+ * TypeORM Data Source Configuration (DB-First PostgreSQL).
  */
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -18,7 +17,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || "postgres",
   password: process.env.DB_PASSWORD || "Admin@123",
   database: process.env.DB_NAME || "enterprise_mcp",
-  synchronize: false, // Schema managed via DB-first migrations
+  synchronize: false,
   logging: process.env.DEBUG_SQL === "true",
   entities: [EmployeeEntity, ProjectEntity]
 });
@@ -26,7 +25,7 @@ export const AppDataSource = new DataSource({
 let initPromise: Promise<DataSource> | null = null;
 
 /**
- * Ensures TypeORM DataSource is initialized once (singleton pattern).
+ * Initializes and returns the TypeORM DataSource singleton.
  */
 export async function getDataSource(): Promise<DataSource> {
   if (AppDataSource.isInitialized) {
@@ -45,7 +44,7 @@ export async function getDataSource(): Promise<DataSource> {
 }
 
 /**
- * Retrieves the TypeORM Repository for EmployeeEntity.
+ * Retrieves the EmployeeEntity repository.
  */
 export async function getEmployeeRepository(): Promise<Repository<EmployeeEntity>> {
   const ds = await getDataSource();
@@ -53,7 +52,7 @@ export async function getEmployeeRepository(): Promise<Repository<EmployeeEntity
 }
 
 /**
- * Retrieves the TypeORM Repository for ProjectEntity.
+ * Retrieves the ProjectEntity repository.
  */
 export async function getProjectRepository(): Promise<Repository<ProjectEntity>> {
   const ds = await getDataSource();

@@ -110,12 +110,11 @@ d:/DemoMCP/
 │   ├── server/
 │   │   ├── index.ts                # MCP Server entrypoint (Stdio transport)
 │   │   ├── db/
-│   │   │   └── index.ts            # PostgreSQL connection pool & query runner
-│   │   ├── data/
-│   │   │   └── mockData.ts         # Historical mock reference dataset
+│   │   │   ├── index.ts            # TypeORM DataSource & repository providers
+│   │   │   └── entities/           # TypeORM Entities (EmployeeEntity, ProjectEntity)
 │   │   ├── services/
-│   │   │   ├── employeeService.ts  # Employee domain business logic (PostgreSQL)
-│   │   │   ├── projectService.ts   # Project domain business logic (PostgreSQL)
+│   │   │   ├── employeeService.ts  # Employee domain business logic (TypeORM)
+│   │   │   ├── projectService.ts   # Project domain business logic (TypeORM)
 │   │   │   └── salaryService.ts    # Salary breakdown computation
 │   │   └── tools/
 │   │       ├── employeeTools.ts    # getEmployeeDetails, listEmployees
