@@ -1,0 +1,40 @@
+{
+  "name": "mcp-demo",
+  "version": "1.0.0",
+  "description": "MCP Server and Client Demo using Node.js, TypeScript, and OpenAI",
+  "main": "dist/server/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server/index.js",
+    "server": "node --import tsx src/server/index.ts",
+    "client": "node --import tsx src/client/index.ts",
+    "client:direct": "node --import tsx src/client/index.ts --direct",
+    "test:services": "node --import tsx scripts/verify-services.ts",
+    "test:server": "node --import tsx scripts/verify-server.ts",
+    "test:client": "node --import tsx scripts/verify-client.ts",
+    "inspector": "npx @modelcontextprotocol/inspector node --import tsx src/server/index.ts",
+    "install:claude": "node --import tsx scripts/install-claude.ts"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "openai",
+    "typescript",
+    "ai-agent",
+    "tools"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "dotenv": "^16.4.7",
+    "openai": "^4.86.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "tsx": "^4.23.15",
+    "typescript": "^5.7.3"
+  }
+}
