@@ -22,7 +22,7 @@ export function registerProjectTools(server: McpServer): void {
       console.error(`[MCP Tool Call] getProjectDetails requested for projectId: "${projectId}"`);
 
       try {
-        const result = ProjectService.getProjectById(projectId);
+        const result = await ProjectService.getProjectById(projectId);
 
         if (!result.success || !result.data) {
           return {

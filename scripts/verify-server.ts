@@ -1,6 +1,7 @@
 import { createServer } from "../src/server/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
+import { closePool } from "../src/server/db/index.js";
 
 async function verifyServer() {
   console.log("=== Verifying MCP Server Protocol & Tools ===");
@@ -87,6 +88,7 @@ async function verifyServer() {
   // Clean disconnect
   await client.close();
   await server.close();
+  await closePool();
   console.log("\n=== MCP Server Protocol & Tools Verified Successfully! ===");
 }
 

@@ -109,11 +109,13 @@ d:/DemoMCP/
 │   │   └── schemas.ts              # Zod domain entities & tool input schemas
 │   ├── server/
 │   │   ├── index.ts                # MCP Server entrypoint (Stdio transport)
+│   │   ├── db/
+│   │   │   └── index.ts            # PostgreSQL connection pool & query runner
 │   │   ├── data/
-│   │   │   └── mockData.ts         # In-memory employee & project datasets
+│   │   │   └── mockData.ts         # Historical mock reference dataset
 │   │   ├── services/
-│   │   │   ├── employeeService.ts  # Employee domain business logic
-│   │   │   ├── projectService.ts   # Project domain business logic
+│   │   │   ├── employeeService.ts  # Employee domain business logic (PostgreSQL)
+│   │   │   ├── projectService.ts   # Project domain business logic (PostgreSQL)
 │   │   │   └── salaryService.ts    # Salary breakdown computation
 │   │   └── tools/
 │   │       ├── employeeTools.ts    # getEmployeeDetails, listEmployees
@@ -124,12 +126,16 @@ d:/DemoMCP/
 │       ├── mcpClient.ts            # MCP Client lifecycle & stdio transport
 │       ├── llmService.ts           # OpenAI agent loop & offline simulation
 │       └── toolMapper.ts           # MCP Schema <-> OpenAI Tool Schema translator
+├── migrations/
+│   ├── 001_create_schema.sql       # PostgreSQL DDL for tables & indexes
+│   └── 002_seed_data.sql           # Initial seed data for employees & projects
 ├── scripts/
+│   ├── migrate.ts                  # DB-First migration runner
 │   ├── verify-services.ts          # Unit verification for domain logic
 │   ├── verify-server.ts            # Integration verification for MCP server
 │   └── verify-client.ts            # Subprocess verification for MCP client
-├── .env.example                    # Template for environment variables
-├── .env                            # Local configuration (API keys)
+├── .env.example                    # Template for environment variables (DB + OpenAI)
+├── .env                            # Local configuration (PostgreSQL credentials)
 ├── .gitignore                      # Secrets & build artifact protection
 ├── package.json                    # Scripts and dependency specifications
 ├── tsconfig.json                   # TypeScript NodeNext ESM configuration
@@ -140,8 +146,10 @@ d:/DemoMCP/
 
 ## 🛠 Prerequisites & Technology Stack
 
+- **PostgreSQL**: v14+ (Tested with PostgreSQL 18 & pgAdmin 4)
 - **Node.js**: v20+ or v22 LTS (Active LTS recommended)
 - **TypeScript**: v5.7+
+- **Database Driver**: `pg` (node-postgres) + `@types/pg`
 - **MCP SDK**: `@modelcontextprotocol/sdk` (v1.6+)
 - **OpenAI Node SDK**: `openai` (v4.86+)
 - **Validation**: `zod` (v3.24+)
@@ -156,20 +164,33 @@ d:/DemoMCP/
 npm install
 ```
 
-### 2. Configure Environment (Optional for Live GPT)
-Copy `.env.example` to `.env`:
-```bash
-# Set your OpenAI API key for live GPT-4o-mini reasoning:
+### 2. Configure Environment & Database
+Copy `.env.example` to `.env` and verify database credentials:
+```env
+# PostgreSQL Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=Admin@123
+DB_NAME=enterprise_mcp
+
+# Optional: Set your OpenAI API key for live GPT-4o-mini reasoning:
 OPENAI_API_KEY=sk-...
 ```
-> **Note**: If `OPENAI_API_KEY` is not provided, the application runs in **Simulated Agent Mode**, demonstrating the identical tool-calling and response synthesis flow offline!
 
-### 3. Run Automated Tests
+### 3. Run Database Migrations (DB-First)
+Run the migration script to automatically create the `enterprise_mcp` database, tables (`employees`, `projects`, `schema_migrations`), and seed initial data:
 ```bash
-# Verify domain business logic
+npm run migrate
+```
+> **pgAdmin 4**: Open pgAdmin 4, navigate to **Servers** > **PostgreSQL 18** > **Databases** > **enterprise_mcp** > **Schemas** > **public** > **Tables** to view the live tables and rows!
+
+### 4. Run Automated Tests
+```bash
+# Verify PostgreSQL-backed domain business logic
 npm run test:services
 
-# Verify MCP Server tool registration & JSON-RPC responses
+# Verify MCP Server tool registration & JSON-RPC responses over protocol
 npm run test:server
 
 # Verify MCP Client connection over stdio subprocess

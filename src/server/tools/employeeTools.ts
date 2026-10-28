@@ -24,7 +24,7 @@ export function registerEmployeeTools(server: McpServer): void {
       console.error(`[MCP Tool Call] getEmployeeDetails requested for employeeId: "${employeeId}"`);
 
       try {
-        const result = EmployeeService.getEmployeeById(employeeId);
+        const result = await EmployeeService.getEmployeeById(employeeId);
 
         if (!result.success || !result.data) {
           return {
@@ -90,7 +90,7 @@ export function registerEmployeeTools(server: McpServer): void {
       console.error("[MCP Tool Call] listEmployees requested");
 
       try {
-        const result = EmployeeService.getAllEmployees();
+        const result = await EmployeeService.getAllEmployees();
 
         const formatted = {
           status: "success",

@@ -3,6 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { registerEmployeeTools } from "./tools/employeeTools.js";
 import { registerProjectTools } from "./tools/projectTools.js";
 import { registerSalaryTools } from "./tools/salaryTools.js";
+import { closePool } from "./db/index.js";
 
 /**
  * Enterprise MCP Server Entrypoint
@@ -49,6 +50,7 @@ export async function startServer(): Promise<void> {
     console.error(`\n[MCP Server] Received ${signal}. Closing server transport cleanly...`);
     try {
       await server.close();
+      await closePool();
       console.error("[MCP Server] Shutdown complete.");
       process.exit(0);
     } catch (err) {
