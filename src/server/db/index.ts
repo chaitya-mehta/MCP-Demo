@@ -7,20 +7,38 @@ import { ProjectEntity } from "./entities/ProjectEntity.js";
 // Ensure environment variables are loaded
 dotenv.config();
 
+const isProduction = process.env.NODE_ENV === "production";
+const databaseUrl = process.env.DATABASE_URL;
+
 /**
- * TypeORM Data Source Configuration (DB-First PostgreSQL).
+ * TypeORM Data Source Configuration (Supports both local and Cloud PostgreSQL e.g. Railway / Render).
  */
-export const AppDataSource = new DataSource({
-  type: "postgres",
-  host: process.env.DB_HOST || "localhost",
-  port: parseInt(process.env.DB_PORT || "5432", 10),
-  username: process.env.DB_USER || "postgres",
-  password: process.env.DB_PASSWORD || "Admin@123",
-  database: process.env.DB_NAME || "enterprise_mcp",
-  synchronize: false,
-  logging: process.env.DEBUG_SQL === "true",
-  entities: [EmployeeEntity, ProjectEntity]
-});
+export const AppDataSource = new DataSource(
+  databaseUrl
+    ? {
+        type: "postgres",
+        url: databaseUrl,
+        ssl: databaseUrl.includes("sslmode=disable")
+          ? false
+          : isProduction || databaseUrl.includes("sslmode=require")
+          ? { rejectUnauthorized: false }
+          : false,
+        synchronize: false,
+        logging: process.env.DEBUG_SQL === "true",
+        entities: [EmployeeEntity, ProjectEntity]
+      }
+    : {
+        type: "postgres",
+        host: process.env.DB_HOST || "localhost",
+        port: parseInt(process.env.DB_PORT || "5432", 10),
+        username: process.env.DB_USER || "postgres",
+        password: process.env.DB_PASSWORD || "Admin@123",
+        database: process.env.DB_NAME || "enterprise_mcp",
+        synchronize: false,
+        logging: process.env.DEBUG_SQL === "true",
+        entities: [EmployeeEntity, ProjectEntity]
+      }
+);
 
 let initPromise: Promise<DataSource> | null = null;
 

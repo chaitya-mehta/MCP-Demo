@@ -7,6 +7,7 @@ dotenv.config();
 
 const { Client } = pg;
 
+const databaseUrl = process.env.DATABASE_URL;
 const DB_HOST = process.env.DB_HOST || "localhost";
 const DB_PORT = parseInt(process.env.DB_PORT || "5432", 10);
 const DB_USER = process.env.DB_USER || "postgres";
@@ -14,9 +15,14 @@ const DB_PASSWORD = process.env.DB_PASSWORD || "Admin@123";
 const TARGET_DB = process.env.DB_NAME || "enterprise_mcp";
 
 /**
- * Ensures the target database exists; creates it if not.
+ * Ensures the target database exists when running on local PostgreSQL.
  */
 async function ensureDatabaseExists() {
+  if (databaseUrl) {
+    // In cloud environments (Railway, Render, Neon), database is already provisioned
+    return;
+  }
+
   console.log(`[Migration] Checking if database '${TARGET_DB}' exists on ${DB_HOST}:${DB_PORT}...`);
 
   const maintenanceClient = new Client({
@@ -37,7 +43,6 @@ async function ensureDatabaseExists() {
 
     if (res.rowCount === 0) {
       console.log(`[Migration] Database '${TARGET_DB}' does not exist. Creating...`);
-      // CREATE DATABASE cannot be executed in a transaction block, run directly
       await maintenanceClient.query(`CREATE DATABASE "${TARGET_DB}"`);
       console.log(`[Migration] Database '${TARGET_DB}' created successfully.`);
     } else {
@@ -54,16 +59,28 @@ async function ensureDatabaseExists() {
 export async function runMigrations() {
   await ensureDatabaseExists();
 
-  const client = new Client({
-    host: DB_HOST,
-    port: DB_PORT,
-    user: DB_USER,
-    password: DB_PASSWORD,
-    database: TARGET_DB
-  });
+  const isProduction = process.env.NODE_ENV === "production";
+  const client = new Client(
+    databaseUrl
+      ? {
+          connectionString: databaseUrl,
+          ssl: databaseUrl.includes("sslmode=disable")
+            ? false
+            : isProduction || databaseUrl.includes("sslmode=require")
+            ? { rejectUnauthorized: false }
+            : false
+        }
+      : {
+          host: DB_HOST,
+          port: DB_PORT,
+          user: DB_USER,
+          password: DB_PASSWORD,
+          database: TARGET_DB
+        }
+  );
 
   await client.connect();
-  console.log(`[Migration] Connected to database '${TARGET_DB}'.`);
+  console.log(`[Migration] Connected to database ${databaseUrl ? "(via DATABASE_URL)" : `'${TARGET_DB}'`}.`);
 
   try {
     // 1. Ensure schema_migrations table exists

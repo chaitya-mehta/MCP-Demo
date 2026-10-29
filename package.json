@@ -8,6 +8,8 @@
     "build": "tsc",
     "start": "node dist/server/index.js",
     "server": "node --import reflect-metadata --import tsx src/server/index.ts",
+    "server:sse": "node --import reflect-metadata --import tsx src/server/sseServer.ts",
+    "start:sse": "node dist/server/sseServer.js",
     "client": "node --import tsx src/client/index.ts",
     "client:direct": "node --import tsx src/client/index.ts --direct",
     "test:services": "node --import tsx scripts/verify-services.ts",
@@ -29,7 +31,9 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.1",
+    "cors": "^2.8.6",
     "dotenv": "^16.4.7",
+    "express": "^5.3.0",
     "openai": "^4.86.0",
     "pg": "^8.23.1",
     "reflect-metadata": "^0.2.2",
@@ -37,6 +41,8 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.13.4",
     "@types/pg": "^8.23.1",
     "tsx": "^4.23.15",
