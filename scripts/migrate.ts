@@ -79,7 +79,21 @@ export async function runMigrations() {
         }
   );
 
-  await client.connect();
+  let connected = false;
+  let attempts = 0;
+  const maxAttempts = 10;
+  while (!connected && attempts < maxAttempts) {
+    try {
+      attempts++;
+      console.log(`[Migration] Attempting to connect to database (attempt ${attempts}/${maxAttempts})...`);
+      await client.connect();
+      connected = true;
+    } catch (err) {
+      if (attempts >= maxAttempts) throw err;
+      console.log(`[Migration] Database not ready yet (${(err as Error).message}). Retrying in 4s...`);
+      await new Promise((resolve) => setTimeout(resolve, 4000));
+    }
+  }
   console.log(`[Migration] Connected to database ${databaseUrl ? "(via DATABASE_URL)" : `'${TARGET_DB}'`}.`);
 
   try {

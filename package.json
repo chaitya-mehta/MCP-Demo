@@ -37,15 +37,15 @@
     "openai": "^4.86.0",
     "pg": "^8.23.1",
     "reflect-metadata": "^0.2.2",
+    "tsx": "^4.23.15",
     "typeorm": "^1.1.2",
+    "typescript": "^5.7.3",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^22.13.4",
-    "@types/pg": "^8.23.1",
-    "tsx": "^4.23.15",
-    "typescript": "^5.7.3"
+    "@types/pg": "^8.23.1"
   }
 }

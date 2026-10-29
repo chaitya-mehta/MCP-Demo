@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import express, { Request, Response } from "express";
 import cors from "cors";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
