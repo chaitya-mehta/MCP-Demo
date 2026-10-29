@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: enterprise-directory-mcp
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run migrate && npm run start:sse
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: enterprise-mcp-db
+          property: connectionString
+
+databases:
+  - name: enterprise-mcp-db
+    plan: free
+    databaseName: enterprise_mcp
+    user: postgres

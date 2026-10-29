@@ -66,7 +66,7 @@ export async function runMigrations() {
           connectionString: databaseUrl,
           ssl: databaseUrl.includes("sslmode=disable")
             ? false
-            : isProduction || databaseUrl.includes("sslmode=require")
+            : isProduction || databaseUrl.includes("sslmode=require") || databaseUrl.includes("render.com")
             ? { rejectUnauthorized: false }
             : false
         }
